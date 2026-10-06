@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
-from .routers import auth_routes, food_routes, orders_routes, reviews_routes, ai_routes
+from .routers import auth_routes, food_routes, orders_routes, reviews_routes, ai_routes, users_routes
 
 # Initialize DB tables (SQLite fallback)
 Base.metadata.create_all(bind=engine)
@@ -18,6 +18,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_routes.router, prefix="/api")
+app.include_router(users_routes.router, prefix="/api")
 app.include_router(food_routes.router, prefix="/api")
 app.include_router(orders_routes.router, prefix="/api")
 app.include_router(reviews_routes.router, prefix="/api")

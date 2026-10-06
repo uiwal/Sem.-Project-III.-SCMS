@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, ShoppingCart, Utensils, LayoutDashboard } from 'lucide-react';
+import { LogOut, ShoppingCart, Utensils, LayoutDashboard, User } from 'lucide-react';
 
 export default function Navbar() {
     const { user, logout } = useContext(AuthContext);
@@ -36,7 +36,11 @@ export default function Navbar() {
                                     </Link>
                                 )}
 
-                                <button onClick={logout} className="p-2 hover:bg-red-700 rounded-full cursor-pointer">
+                                <Link to="/profile" className="p-2 hover:bg-red-700 rounded-full cursor-pointer" title="Profile & Settings">
+                                    <User className="h-6 w-6" />
+                                </Link>
+
+                                <button onClick={logout} className="p-2 hover:bg-red-700 rounded-full cursor-pointer" title="Logout">
                                     <LogOut className="h-6 w-6" />
                                 </button>
                             </>

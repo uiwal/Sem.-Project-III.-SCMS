@@ -59,6 +59,30 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db), current_user
 def get_my_orders(db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):
     return db.query(Order).filter(Order.user_id == current_user.id).order_by(Order.created_at.desc()).all()
 
+# Alias for /my to match user requirements request precisely
+@router.get("/my-orders", response_model=List[OrderResponse])
+def get_my_orders_alias(db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):
+    return db.query(Order).filter(Order.user_id == current_user.id).order_by(Order.created_at.desc()).all()
+
+@router.get("/my-summary")
+def get_my_orders_summary(db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):
+    orders = db.query(Order).filter(Order.user_id == current_user.id).all()
+    
+    total_orders = len(orders)
+    completed_orders = sum(1 for o in orders if o.status == OrderStatus.completed)
+    cancelled_orders = sum(1 for o in orders if o.status == OrderStatus.cancelled)
+    
+    # Normally spent includes completed/paid or possibly just everything not cancelled.
+    # We will exclude cancelled from total_spent.
+    total_spent = sum(o.total_amount for o in orders if o.status != OrderStatus.cancelled)
+    
+    return {
+        "total_orders": total_orders,
+        "completed_orders": completed_orders,
+        "cancelled_orders": cancelled_orders,
+        "total_spent": total_spent
+    }
+
 @router.get("/all", response_model=List[OrderResponse])
 def get_all_orders(db: Session = Depends(get_db), current_user = Depends(get_current_staff_or_admin)):
     return db.query(Order).order_by(Order.created_at.desc()).all()

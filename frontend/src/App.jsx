@@ -10,6 +10,7 @@ import StudentMenu from './pages/StudentMenu';
 import StaffDashboard from './pages/StaffDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import CartCheckout from './pages/CartCheckout';
+import Profile from './pages/Profile';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useContext(AuthContext);
@@ -53,6 +54,12 @@ function App() {
               <Route path="/cart" element={
                 <ProtectedRoute allowedRoles={['student']}>
                   <CartCheckout />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/profile" element={
+                <ProtectedRoute allowedRoles={['student', 'staff', 'admin']}>
+                  <Profile />
                 </ProtectedRoute>
               } />
 
