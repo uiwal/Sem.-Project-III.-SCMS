@@ -28,7 +28,7 @@ const RoleBasedRedirect = () => {
   if (!user) return <Navigate to="/login" />;
 
   if (user.role === 'student') return <Navigate to="/menu" />;
-  if (user.role === 'staff') return <Navigate to="/staff" />;
+  if (user.role === 'staff') return <Navigate to="/staff/dashboard" />;
   if (user.role === 'admin') return <Navigate to="/admin" />;
   return <Navigate to="/login" />;
 };
@@ -63,7 +63,7 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              <Route path="/staff/*" element={
+              <Route path="/staff/dashboard" element={
                 <ProtectedRoute allowedRoles={['staff', 'admin']}>
                   <StaffDashboard />
                 </ProtectedRoute>

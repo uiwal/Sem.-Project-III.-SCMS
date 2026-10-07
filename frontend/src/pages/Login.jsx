@@ -14,7 +14,7 @@ export default function Login() {
         try {
             const role = await login(email, password);
             if (role === 'student') window.location.href = '/menu';
-            else if (role === 'staff') window.location.href = '/staff';
+            else if (role === 'staff') window.location.href = '/staff/dashboard';
             else if (role === 'admin') window.location.href = '/admin';
         } catch (err) {
             setError('Invalid email or password');

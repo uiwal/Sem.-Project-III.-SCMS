@@ -31,7 +31,7 @@ export default function Navbar() {
                                 )}
 
                                 {(user.role === 'staff' || user.role === 'admin') && (
-                                    <Link to={`/${user.role}`} className="p-2 hover:bg-red-700 rounded-full cursor-pointer">
+                                    <Link to={user.role === 'staff' ? '/staff/dashboard' : `/${user.role}`} className="p-2 hover:bg-red-700 rounded-full cursor-pointer">
                                         <LayoutDashboard className="h-6 w-6" />
                                     </Link>
                                 )}

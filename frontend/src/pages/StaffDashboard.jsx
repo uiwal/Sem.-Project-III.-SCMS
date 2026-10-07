@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { Package, UtensilsCrossed, AlertTriangle } from 'lucide-react';
+import { Package, UtensilsCrossed, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function StaffDashboard() {
     const [orders, setOrders] = useState([]);
