@@ -6,6 +6,7 @@ import { Trash2, QrCode, CreditCard, Banknote, Clock, CheckCircle } from 'lucide
 export default function CartCheckout() {
     const [cart, setCart] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState('UPI');
+    const [selectedTable, setSelectedTable] = useState('');
     const [placedOrder, setPlacedOrder] = useState(null);
     const [waitTime, setWaitTime] = useState(null);
     const navigate = useNavigate();
@@ -26,10 +27,15 @@ export default function CartCheckout() {
 
     const handleCheckout = async () => {
         if (cart.length === 0) return;
+        if (!selectedTable) {
+            alert("Please select your table number.");
+            return;
+        }
         try {
             const orderPayload = {
                 items: cart.map(c => ({ food_item_id: c.food_item_id, quantity: c.quantity })),
-                payment_method: paymentMethod
+                payment_method: paymentMethod,
+                table_number: parseInt(selectedTable)
             };
             const res = await api.post('/orders/', orderPayload);
             setPlacedOrder(res.data);
@@ -40,7 +46,7 @@ export default function CartCheckout() {
             const waitRes = await api.get('/ai/wait-time');
             setWaitTime(waitRes.data.estimated_wait_minutes);
         } catch (err) {
-            alert("Checkout failed!");
+            alert(err.response?.data?.detail || "Checkout failed!");
         }
     };
 
@@ -118,6 +124,21 @@ export default function CartCheckout() {
                         <span>₹{total}</span>
                     </div>
 
+                    <h3 className="font-bold text-gray-700 mb-3">Delivery / Pickup Location</h3>
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Where are you sitting?</label>
+                        <select
+                            value={selectedTable}
+                            onChange={(e) => setSelectedTable(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-white"
+                        >
+                            <option value="">Select Table Option ▼</option>
+                            {[...Array(20)].map((_, i) => (
+                                <option key={i + 1} value={i + 1}>Table {i + 1}</option>
+                            ))}
+                        </select>
+                    </div>
+
                     <h3 className="font-bold text-gray-700 mb-3">Payment Method</h3>
                     <div className="space-y-3 mb-8">
                         <label className={`flex items-center p-4 border rounded-xl cursor-pointer ${paymentMethod === 'UPI' ? 'border-primary bg-red-50' : 'border-gray-200 bg-white'}`}>
@@ -133,7 +154,7 @@ export default function CartCheckout() {
                     </div>
 
                     <button
-                        disabled={cart.length === 0}
+                        disabled={cart.length === 0 || !selectedTable}
                         onClick={handleCheckout}
                         className="w-full py-4 bg-primary text-white text-lg font-bold rounded-xl hover:bg-red-700 focus:outline-none transition-transform active:scale-95 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none shadow-md"
                     >

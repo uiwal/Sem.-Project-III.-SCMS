@@ -21,6 +21,8 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db), current_user
         food = db.query(FoodItem).filter(FoodItem.id == item.food_item_id).first()
         if not food:
             raise HTTPException(status_code=400, detail=f"Food item {item.food_item_id} not found")
+        if not food.is_available:
+            raise HTTPException(status_code=400, detail=f"{food.name} is currently unavailable.")
         total_amount += food.price * item.quantity
         order_items_db.append(
             OrderItem(food_item_id=food.id, quantity=item.quantity, price_at_time=food.price)
@@ -32,7 +34,8 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db), current_user
         user_id=current_user.id,
         total_amount=total_amount,
         status=OrderStatus.pending,
-        qr_code=qr_code_str
+        qr_code=qr_code_str,
+        table_number=order.table_number
     )
     db.add(new_order)
     db.commit()

@@ -7,6 +7,8 @@ from .models import RoleEnum, OrderStatus
 class UserBase(BaseModel):
     name: str
     email: EmailStr
+    class Config:
+        orm_mode = True
 
 class UserCreate(UserBase):
     password: str
@@ -90,6 +92,8 @@ class OrderResponse(BaseModel):
     created_at: datetime
     pickup_time: Optional[datetime] = None
     qr_code: Optional[str] = None
+    table_number: Optional[int] = None
+    user: UserBase
     items: List[OrderItemResponse] = []
     class Config:
         orm_mode = True
@@ -97,6 +101,7 @@ class OrderResponse(BaseModel):
 class OrderCreate(BaseModel):
     items: List[CartItemCreate]
     payment_method: str = "UPI"
+    table_number: int
 
 # Payment
 class PaymentResponse(BaseModel):

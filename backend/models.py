@@ -69,6 +69,7 @@ class Order(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     pickup_time = Column(DateTime, nullable=True)
     qr_code = Column(String(255), nullable=True) # string token for QR
+    table_number = Column(Integer, nullable=True)
 
     user = relationship("User", back_populates="orders")
     items = relationship("OrderItem", back_populates="order")

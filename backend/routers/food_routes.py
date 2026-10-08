@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from pydantic import BaseModel
 
 from ..database import get_db
 from ..models import Category, FoodItem, Inventory
@@ -47,4 +48,17 @@ def get_food_item(item_id: int, db: Session = Depends(get_db)):
     item = db.query(FoodItem).filter(FoodItem.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Food item not found")
+    return item
+
+class AvailabilityUpdate(BaseModel):
+    is_available: bool
+
+@router.put("/items/{item_id}/availability", response_model=FoodItemResponse)
+def update_food_availability(item_id: int, update: AvailabilityUpdate, db: Session = Depends(get_db), current_user = Depends(get_current_staff_or_admin)):
+    item = db.query(FoodItem).filter(FoodItem.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Food item not found")
+    item.is_available = update.is_available
+    db.commit()
+    db.refresh(item)
     return item

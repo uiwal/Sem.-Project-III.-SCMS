@@ -38,6 +38,15 @@ export default function StaffDashboard() {
         }
     };
 
+    const toggleAvailability = async (id, newStatus) => {
+        try {
+            await api.put(`/food/items/${id}/availability`, { is_available: newStatus });
+            fetchData();
+        } catch (err) {
+            alert("Failed to update availability");
+        }
+    };
+
     if (loading) return <div className="p-10 text-center font-bold">Loading...</div>;
 
     const pendingOrders = orders.filter(o => o.status === 'Pending' || o.status === 'Preparing');
@@ -59,8 +68,10 @@ export default function StaffDashboard() {
                             {pendingOrders.map(order => (
                                 <div key={order.id} className="p-4 bg-gray-50 border border-gray-100 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4">
                                     <div>
-                                        <h3 className="font-bold text-gray-900">Order #{order.id}</h3>
-                                        <p className="text-sm text-gray-500">{new Date(order.created_at).toLocaleTimeString()}</p>
+                                        <h3 className="font-bold text-gray-900 mb-1">Order #{order.id}</h3>
+                                        {order.user && <p className="text-gray-700 font-bold flex items-center gap-1 text-sm">👤 {order.user.name}</p>}
+                                        {order.table_number && <p className="text-gray-700 font-bold flex items-center gap-1 text-sm bg-gray-200 px-2 rounded mt-1 max-w-max">📍 Table {order.table_number}</p>}
+                                        <p className="text-sm text-gray-500 mt-2">{new Date(order.created_at).toLocaleTimeString()}</p>
                                         <ul className="text-sm text-gray-700 mt-2 list-disc pl-4 marker:text-primary">
                                             {order.items.map(item => (
                                                 <li key={item.id}>{item.quantity}x {item.food_item.name}</li>
@@ -95,24 +106,31 @@ export default function StaffDashboard() {
                             <Package className="text-primary" /> Inventory Alerts
                         </h2>
                         <div className="space-y-4">
-                            {/* Mock inventory behavior from food_items api response (we assume we need an active inventory check but we'll show foods with is_available) */}
-                            {inventory.filter(f => f.is_available === false).length === 0 ? (
-                                <div className="p-4 bg-green-50 rounded-lg border border-green-200 text-green-700 font-bold flex items-center gap-2">
-                                    <CheckCircle className="w-5 h-5" /> All items in stock
+                            {inventory.length === 0 ? (
+                                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-500 font-bold text-center">
+                                    Loading items...
                                 </div>
                             ) : (
-                                inventory.filter(f => f.is_available === false).map(f => (
-                                    <div key={f.id} className="p-3 bg-red-50 rounded-lg border border-red-200 flex items-center justify-between">
-                                        <span className="font-bold text-red-900">{f.name}</span>
-                                        <span className="text-xs text-white bg-red-600 px-2 py-1 rounded">Out of Stock</span>
+                                inventory.map(f => (
+                                    <div key={f.id} className={`p-3 rounded-lg border flex flex-col gap-2 ${f.is_available ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-bold text-gray-900">{f.name}</span>
+                                            <span className="font-bold text-primary text-sm">₹{f.price}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between mt-1">
+                                            <span className={`text-xs px-2 py-1 rounded text-white font-bold ${f.is_available ? 'bg-green-600' : 'bg-red-600'}`}>
+                                                Status: {f.is_available ? 'Available' : 'Out of Stock'}
+                                            </span>
+                                            <button
+                                                onClick={() => toggleAvailability(f.id, !f.is_available)}
+                                                className={`text-xs px-3 py-1 rounded font-bold border transition ${f.is_available ? 'bg-white text-red-600 border-red-600 hover:bg-red-50' : 'bg-white text-green-600 border-green-600 hover:bg-green-50'}`}
+                                            >
+                                                {f.is_available ? 'Mark Unavailable' : 'Mark Available'}
+                                            </button>
+                                        </div>
                                     </div>
                                 ))
                             )}
-                            {/* Show an alert for demo */}
-                            <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center justify-between">
-                                <span className="font-bold text-yellow-900 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Samosa</span>
-                                <span className="text-xs text-white bg-yellow-500 px-2 py-1 rounded">Low Stock</span>
-                            </div>
                         </div>
                     </div>
                 </div>

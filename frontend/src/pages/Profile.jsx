@@ -305,6 +305,7 @@ export default function Profile() {
                                         <tr className="bg-gray-50 border-b border-gray-100">
                                             <th className="px-6 py-3 text-sm font-semibold text-gray-600">Order ID</th>
                                             <th className="px-6 py-3 text-sm font-semibold text-gray-600">Date</th>
+                                            <th className="px-6 py-3 text-sm font-semibold text-gray-600">Table</th>
                                             <th className="px-6 py-3 text-sm font-semibold text-gray-600">Items</th>
                                             <th className="px-6 py-3 text-sm font-semibold text-gray-600">Total</th>
                                             <th className="px-6 py-3 text-sm font-semibold text-gray-600">Status</th>
@@ -332,6 +333,7 @@ export default function Profile() {
                                                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                                                     <td className="px-6 py-4 font-medium text-gray-900">#{order.id}</td>
                                                     <td className="px-6 py-4 text-sm text-gray-500">{date}</td>
+                                                    <td className="px-6 py-4 text-sm font-bold text-gray-700">{order.table_number || '-'}</td>
                                                     <td className="px-6 py-4">
                                                         <div className="flex flex-col gap-1">
                                                             {order.items.map(item => (
